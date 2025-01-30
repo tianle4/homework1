@@ -1,0 +1,26 @@
+--cpu Cortex-M3
+"homework_test\startup_stm32f103xe.o"
+"homework_test\main.o"
+"homework_test\gpio.o"
+"homework_test\stm32f1xx_it.o"
+"homework_test\stm32f1xx_hal_msp.o"
+"homework_test\stm32f1xx_hal_gpio_ex.o"
+"homework_test\stm32f1xx_hal_tim.o"
+"homework_test\stm32f1xx_hal_tim_ex.o"
+"homework_test\stm32f1xx_hal.o"
+"homework_test\stm32f1xx_hal_rcc.o"
+"homework_test\stm32f1xx_hal_rcc_ex.o"
+"homework_test\stm32f1xx_hal_gpio.o"
+"homework_test\stm32f1xx_hal_dma.o"
+"homework_test\stm32f1xx_hal_cortex.o"
+"homework_test\stm32f1xx_hal_pwr.o"
+"homework_test\stm32f1xx_hal_flash.o"
+"homework_test\stm32f1xx_hal_flash_ex.o"
+"homework_test\stm32f1xx_hal_exti.o"
+"homework_test\system_stm32f1xx.o"
+"..\Motor_simulation\motor_simulationM3.lib"
+"homework_test\bsp_dwt.o"
+--strict --scatter "homework_test\homework_test.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "homework_test.map" -o homework_test\homework_test.axf
