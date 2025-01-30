@@ -161,8 +161,8 @@ int main(void)
         {
             case VELOCITY_STEP:
                 current_reference = target_velocity;
-                break;
-                
+          break;
+          
             case VELOCITY_FREQUENCY:
                 current_reference = sine_offset + sine_amplitude * sinf(2.0 * 3.14159 * sine_frequency * t);
                 break;
@@ -170,12 +170,12 @@ int main(void)
         
         // 速度闭环控制
         Input = PID_Calculate(&pid_velocity, current_reference, Motor.Velocity);
-    }
+          } 
     else if (control_mode == ANGLE_CONTROL) 
     {
         // 角度控制模式
         switch(angle_response_mode)
-        {
+            {
             case ANGLE_STEP:
                 current_reference = target_angle;
                 break;
@@ -191,9 +191,9 @@ int main(void)
                     Motor.Velocity += disturbance_magnitude;
                     disturbance_applied = true;
                 }
-                break;
-        }
-        
+          break;
+    }
+
         // 角度闭环控制（串级PID）
         VelocityRef = PID_Calculate(&pid_angle, current_reference, Motor.Angle);
         Input = PID_Calculate(&pid_velocity, VelocityRef, Motor.Velocity);
