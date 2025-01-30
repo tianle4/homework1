@@ -3,18 +3,18 @@
         {
             "name": "homework_test",
             "includePath": [
-                "d:\\STM32 Project\\homework1\\homework_test\\Core\\Inc",
-                "d:\\STM32 Project\\homework1\\homework_test\\Drivers\\STM32F1xx_HAL_Driver\\Inc",
-                "d:\\STM32 Project\\homework1\\homework_test\\Drivers\\STM32F1xx_HAL_Driver\\Inc\\Legacy",
-                "d:\\STM32 Project\\homework1\\homework_test\\Drivers\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
-                "d:\\STM32 Project\\homework1\\homework_test\\Drivers\\CMSIS\\Include",
-                "d:\\STM32 Project\\homework1\\homework_test\\Bsp",
-                "d:\\STM32 Project\\homework1\\homework_test\\Motor_simulation",
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\Core\\Inc",
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\Drivers\\STM32F1xx_HAL_Driver\\Inc",
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\Drivers\\STM32F1xx_HAL_Driver\\Inc\\Legacy",
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\Drivers\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\Drivers\\CMSIS\\Include",
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\Bsp",
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\Motor_simulation",
                 "D:\\Keil_v5\\ARM\\ARMCC\\include",
                 "D:\\Keil_v5\\ARM\\ARMCC\\include\\rw",
-                "d:\\STM32 Project\\homework1\\homework_test\\MDK-ARM",
-                "d:\\STM32 Project\\homework1\\homework_test\\Core\\Src",
-                "d:\\STM32 Project\\homework1\\homework_test\\Drivers\\STM32F1xx_HAL_Driver\\Src"
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\MDK-ARM",
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\Core\\Src",
+                "d:\\OneDrive\\Documents\\Git Project\\homework1\\homework_test\\Drivers\\STM32F1xx_HAL_Driver\\Src"
             ],
             "defines": [
                 "USE_HAL_DRIVER",
