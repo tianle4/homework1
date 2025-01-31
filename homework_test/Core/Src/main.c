@@ -54,7 +54,7 @@ typedef struct
     float Kp;
     float Ki;
     float Kd;
-    float output_filter;    
+    float output_lvbo;    
     float lvbo;  //低通滤波参数
 } pid_t;
 
@@ -63,29 +63,28 @@ uint32_t DWT_CNT;
 float dt;
 float t;
 motorObject_t Motor;
-float VelocityRef=0, AngleRef=0, Input=0;
-float Kp_v=0.1, Ki_v=0.01, Kd_v=0.02;  //速度闭环
-float Kp_p=0.5, Ki_p=0.0, Kd_p=0.1;    //角度闭环
+float Input=0.0;
+float Kp_v=1, Ki_v=0.01, Kd_v=0.02;  //速度闭环
+float Kp_a=1, Ki_a=0.01, Kd_a=0.02;    //角度闭环
 
-// 控制模式定义
-#define VELOCITY_CONTROL 0    // 速度控制模式
-#define ANGLE_CONTROL 1       // 角度控制模式
+#define velocity 0    // 速度控制模式
+#define ANGLE 1       // 角度控制模式
 
-// 速度控制模式下的响应类型
-#define VELOCITY_STEP 0       // 速度阶跃
-#define VELOCITY_FREQUENCY 1  // 速度频率响应
+#define VELOCITY_Step 0       // 速度阶跃
+#define VELOCITY_Frequency 1  // 速度频率响应
+#define VELOCITY_Ramp 2      // 新增：速度斜坡响应
 
-// 角度控制模式下的响应类型
-#define ANGLE_STEP 0         // 角度阶跃
-#define ANGLE_FREQUENCY 1    // 角度频率响应
-#define ANGLE_DISTURBANCE 2  // 角度干扰响应
+#define Angle_Step 0         // 角度阶跃
+#define Angle_Frequency 1    // 角度频率
+#define Angle_Disruptions 2  // 角度干扰
 
-uint8_t control_mode = VELOCITY_CONTROL;  // 控制模式选择
-uint8_t velocity_response_mode = VELOCITY_STEP;  // 速度响应模式
-uint8_t angle_response_mode = ANGLE_STEP;       // 角度响应模式
+//模式控制
+uint8_t control_mode = velocity;  //总模式
+uint8_t velocity_mode = VELOCITY_Step; //速度
+uint8_t angle_mode = Angle_Step;       //角度
 
-float target_velocity = 2.0;      // 目标速度值
-float target_angle = 3.14159;     // 目标角度值
+float VelocityRef = 10.0;      
+float AngleRef = 3.14159;     
 float current_reference = 0.0;    
 
 float sine_amplitude = 1.57;      // 正弦信号幅值(π/2弧度)
@@ -95,6 +94,11 @@ float sine_offset = 0.0;          // 正弦信号偏置
 float disturbance_start_time = 5.0;    // 干扰开始
 float disturbance_magnitude = 2.0;      // 干扰幅值
 bool disturbance_applied = false;       // 干扰标志
+
+float velocity_ramp_rate = 1.0;     // 速度斜坡变化率（单位/秒）
+float angle_ramp_rate = 0.5;       // 角度斜坡变化率（弧度/秒）
+float current_velocity = 0.0;  // 当前速度值
+float current_angle_value = 0.0;     // 当前角度值
 
 /* USER CODE END PV */
 
@@ -140,11 +144,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	void PID_Init(pid_t *pid, float Kp, float Ki, float Kd);
 	float PID_Calculate(pid_t *pid, float target, float current);
-    
-    PID_Init(&pid_velocity, Kp_v, Ki_v, Kd_v);
-    PID_Init(&pid_angle, Kp_p, Ki_p, Kd_p);
-    Motor_Object_Init(&Motor);
-    DWT_Init(72);
+  PID_Init(&pid_velocity, Kp_v, Ki_v, Kd_v);
+  PID_Init(&pid_angle, Kp_a, Ki_a, Kd_a);
+  Motor_Object_Init(&Motor);
+  DWT_Init(72);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -154,54 +157,71 @@ int main(void)
     dt = DWT_GetDeltaT(&DWT_CNT);//利用 DWT 定时器获得仿真周期
     t += dt;
 
-    if (control_mode == VELOCITY_CONTROL) 
+    if (control_mode == velocity) 
     {
-        // 速度控制模式
-        switch(velocity_response_mode)
-        {
-            case VELOCITY_STEP:
-                current_reference = target_velocity;
+      // 速度控制模式
+      switch(velocity_mode)
+      {
+        case VELOCITY_Step:
+          current_reference = VelocityRef;
+        break;
+        
+        case VELOCITY_Frequency:
+          current_reference = sine_offset + sine_amplitude * sinf(2.0 * 3.14159 * sine_frequency * t);
+        break;
+
+        case VELOCITY_Ramp:
+          if (current_velocity < VelocityRef) 
+          {
+              current_velocity += velocity_ramp_rate * dt;
+              if (current_velocity > VelocityRef)
+                  current_velocity = VelocityRef;
+          } 
+          else if (current_velocity > VelocityRef) 
+          {
+              current_velocity -= velocity_ramp_rate * dt;
+              if (current_velocity < VelocityRef)
+                  current_velocity = VelocityRef;
+          }
+          current_reference = current_velocity;
+          break;
+      }
+        
+      Input = PID_Calculate(&pid_velocity, current_reference, Motor.Velocity);
+      Motor_Simulation(&Motor, Input, dt);
+      Motor.Velocity = Get_Motor_Velocity(&Motor);
+    }
+
+    else if (control_mode == ANGLE) 
+    {
+      // 角度控制模式
+      switch(angle_mode)
+      {
+      case Angle_Step:
+          current_reference = AngleRef;
           break;
           
-            case VELOCITY_FREQUENCY:
-                current_reference = sine_offset + sine_amplitude * sinf(2.0 * 3.14159 * sine_frequency * t);
-                break;
-        }
-        
-        // 速度闭环控制
-        Input = PID_Calculate(&pid_velocity, current_reference, Motor.Velocity);
-          } 
-    else if (control_mode == ANGLE_CONTROL) 
-    {
-        // 角度控制模式
-        switch(angle_response_mode)
-            {
-            case ANGLE_STEP:
-                current_reference = target_angle;
-                break;
-                
-            case ANGLE_FREQUENCY:
-                current_reference = sine_offset + sine_amplitude * sinf(2.0 * 3.14159 * sine_frequency * t);
-                break;
-
-            case ANGLE_DISTURBANCE:
-                current_reference = target_angle;
-                if (t >= disturbance_start_time && !disturbance_applied) 
-                {
-                    Motor.Velocity += disturbance_magnitude;
-                    disturbance_applied = true;
-                }
+      case Angle_Frequency:
+          current_reference = sine_offset + sine_amplitude * sinf(2.0 * 3.14159 * sine_frequency * t);
           break;
+
+      case Angle_Disruptions:
+          current_reference = AngleRef;
+          if (t >= disturbance_start_time && !disturbance_applied) 
+          {
+              Motor.Angle += disturbance_magnitude;
+              disturbance_applied = true;
+          }
+      break;
+
+      }
+
+      Input = PID_Calculate(&pid_angle, current_reference, Motor.Angle);
+      Motor_Simulation(&Motor,Input,dt);
+      Motor.Angle = Get_Motor_Angle(&Motor);
     }
 
-        // 角度闭环控制（串级PID）
-        VelocityRef = PID_Calculate(&pid_angle, current_reference, Motor.Angle);
-        Input = PID_Calculate(&pid_velocity, VelocityRef, Motor.Velocity);
-    }
 
-    Motor_Simulation(&Motor, Input, dt);
-    Motor.Velocity = Get_Motor_Velocity(&Motor);
-    Motor.Angle += Motor.Velocity * dt;
 
     /* USER CODE END WHILE */
 
@@ -260,7 +280,7 @@ void PID_Init(pid_t *pid, float Kp, float Ki, float Kd)//pid初始化
     pid->Kp = Kp;
     pid->Ki = Ki;
     pid->Kd = Kd;
-    pid->output_filter = 0;
+    pid->output_lvbo = 0;
     pid->lvbo = 0.1;  // 滤波系数
 }
 
@@ -276,9 +296,9 @@ float PID_Calculate(pid_t *pid, float target, float current)
     
     float output = (pid->Kp * pid->err) + (pid->Ki * pid->err_sum) + (pid->Kd * pid->err_difference);
     
-    pid->output_filter = pid->lvbo * output + (1 - pid->lvbo) * pid->output_filter;
+    pid->output_lvbo = pid->lvbo * output + (1 - pid->lvbo) * pid->output_lvbo;
     
-    return pid->output_filter;
+    return pid->output_lvbo;
 }
 /* USER CODE END 4 */
 

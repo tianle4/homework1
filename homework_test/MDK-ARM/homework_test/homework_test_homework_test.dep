@@ -1,7 +1,7 @@
 Dependencies for Project 'homework_test', Target 'homework_test': (DO NOT MODIFY !)
 CompilerVersion: 5060750::V5.06 update 6 (build 750)::.\ARMCC
 F (startup_stm32f103xe.s)(0x6797255C)(--cpu Cortex-M3 -g --apcs=interwork -I.\RTE\_homework_test-ID:\Keil_v5\ARM\PACK\ARM\CMSIS\5.7.0\CMSIS\Core\Include-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include--pd "__UVISION_VERSION SETA 530" --pd "_RTE_ SETA 1" --pd "STM32F10X_HD SETA 1" --pd "_RTE_ SETA 1"--list startup_stm32f103xe.lst --xref -o homework_test\startup_stm32f103xe.o --depend homework_test\startup_stm32f103xe.d)
-F (../Core/Src/main.c)(0x679AFDA9)(--c99 -c --cpu Cortex-M3 -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ..\Bsp -I ..\Motor_simulation-I.\RTE\_homework_test-ID:\Keil_v5\ARM\PACK\ARM\CMSIS\5.7.0\CMSIS\Core\Include-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="530" -D_RTE_ -DSTM32F10X_HD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xE-o homework_test\main.o --omf_browse homework_test\main.crf --depend homework_test\main.d)
+F (../Core/Src/main.c)(0x679B7138)(--c99 -c --cpu Cortex-M3 -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ..\Bsp -I ..\Motor_simulation-I.\RTE\_homework_test-ID:\Keil_v5\ARM\PACK\ARM\CMSIS\5.7.0\CMSIS\Core\Include-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="530" -D_RTE_ -DSTM32F10X_HD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xE-o homework_test\main.o --omf_browse homework_test\main.crf --depend homework_test\main.d)
 I (../Core/Inc/main.h)(0x6797255B)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x67028E86)
 I (../Core/Inc/stm32f1xx_hal_conf.h)(0x6797255B)
@@ -32,6 +32,7 @@ I (..\Motor_simulation\motor_simulation.h)(0x677F80A5)
 I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5E53505C)
 I (D:\Keil_v5\ARM\ARMCC\include\math.h)(0x5E53505A)
 I (..\Bsp\bsp_dwt.h)(0x65A18D28)
+I (D:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5E53505C)
 F (../Core/Src/gpio.c)(0x6797255A)(--c99 -c --cpu Cortex-M3 -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ..\Bsp -I ..\Motor_simulation-I.\RTE\_homework_test-ID:\Keil_v5\ARM\PACK\ARM\CMSIS\5.7.0\CMSIS\Core\Include-ID:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include-D__UVISION_VERSION="530" -D_RTE_ -DSTM32F10X_HD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xE-o homework_test\gpio.o --omf_browse homework_test\gpio.crf --depend homework_test\gpio.d)
 I (../Core/Inc/gpio.h)(0x6797255A)
 I (../Core/Inc/main.h)(0x6797255B)

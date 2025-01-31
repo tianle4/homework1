@@ -30,3 +30,4 @@ homework_test\main.o: ..\Motor_simulation\motor_simulation.h
 homework_test\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 homework_test\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 homework_test\main.o: ..\Bsp\bsp_dwt.h
+homework_test\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
