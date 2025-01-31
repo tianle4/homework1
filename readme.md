@@ -147,6 +147,8 @@ float PID_Calculate(pid_t *pid, float target, float current)
 
 ![2](picture/step.png)
 
+0 - 500ms上升速度较慢，上升时间长，动态响应慢。达到500ms后存在超调，随后趋于稳定，稳态误差为零
+
 ##### （4） 斜坡响应时域图
 
 <font color=Blue>放一张图，应至少包含期望速度与速度闭环控制系统实际速度两条曲线。并对比分析结果。</font>
@@ -174,6 +176,8 @@ float PID_Calculate(pid_t *pid, float target, float current)
 ##### （3）阶跃响应时域图
 
 <font color=Blue>放一张图，应至少包含期望角度，单级PID实际角度，串级PID实际角度三条曲线。并对比分析结果。</font>
+
+
 
 ##### （4）频率响应时域图
 

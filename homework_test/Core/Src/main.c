@@ -64,32 +64,25 @@ float dt;
 float t;
 motorObject_t Motor;
 float Input=0.0;
-float Kp_v=1, Ki_v=0.01, Kd_v=0.02;  //速度闭环
-float Kp_a=1, Ki_a=0.01, Kd_a=0.02;    //角度闭环
+float Kp_v=0.1, Ki_v=0.01, Kd_v=0.2;  //速度闭环
+float Kp_a=5, Ki_a=0.01, Kd_a=0.2;    //角度闭环
 
 #define velocity 0    // 速度控制模式
-#define ANGLE 1       // 角度控制模式
+#define angle 1       // 角度控制模式
 
-#define VELOCITY_Step 0       // 速度阶跃
-#define VELOCITY_Frequency 1  // 速度频率响应
-#define VELOCITY_Ramp 2      // 新增：速度斜坡响应
-
-#define Angle_Step 0         // 角度阶跃
-#define Angle_Frequency 1    // 角度频率
-#define Angle_Disruptions 2  // 角度干扰
+#define Step 0
+#define Ramp 1
+#define Frequency 3
+#define Disruption 4
 
 //模式控制
-uint8_t control_mode = velocity;  //总模式
-uint8_t velocity_mode = VELOCITY_Step; //速度
-uint8_t angle_mode = Angle_Step;       //角度
+uint8_t control_mode = angle;  //总模式
+uint8_t velocity_mode = Step; //速度
+uint8_t angle_mode = Step;       //角度
 
 float VelocityRef = 10.0;      
 float AngleRef = 3.14159;     
 float current_reference = 0.0;    
-
-float sine_amplitude = 1.57;      // 正弦信号幅值(π/2弧度)
-float sine_frequency = 0.5;       // 正弦信号频率
-float sine_offset = 0.0;          // 正弦信号偏置
 
 float disturbance_start_time = 5.0;    // 干扰开始
 float disturbance_magnitude = 2.0;      // 干扰幅值
@@ -99,6 +92,10 @@ float velocity_ramp_rate = 1.0;     // 速度斜坡变化率（单位/秒）
 float angle_ramp_rate = 0.5;       // 角度斜坡变化率（弧度/秒）
 float current_velocity = 0.0;  // 当前速度值
 float current_angle_value = 0.0;     // 当前角度值
+
+float sine_amplitude = 5.0; // 正弦信号幅值
+float sine_frequency = 1.0; // 正弦信号频率
+float sine_offset = 5.0;    // 正弦信号偏置
 
 /* USER CODE END PV */
 
@@ -162,15 +159,15 @@ int main(void)
       // 速度控制模式
       switch(velocity_mode)
       {
-        case VELOCITY_Step:
+        case Step:
           current_reference = VelocityRef;
         break;
         
-        case VELOCITY_Frequency:
-          current_reference = sine_offset + sine_amplitude * sinf(2.0 * 3.14159 * sine_frequency * t);
+        case Frequency:
+          current_reference=sine_offset+sine_amplitude*sinf(2.0*3.14159*sine_frequency*t);
         break;
 
-        case VELOCITY_Ramp:
+        case Ramp:
           if (current_velocity < VelocityRef) 
           {
               current_velocity += velocity_ramp_rate * dt;
@@ -192,27 +189,27 @@ int main(void)
       Motor.Velocity = Get_Motor_Velocity(&Motor);
     }
 
-    else if (control_mode == ANGLE) 
+    else if (control_mode == angle) 
     {
       // 角度控制模式
       switch(angle_mode)
       {
-      case Angle_Step:
-          current_reference = AngleRef;
-          break;
-          
-      case Angle_Frequency:
-          current_reference = sine_offset + sine_amplitude * sinf(2.0 * 3.14159 * sine_frequency * t);
-          break;
+        case Step:
+            current_reference = AngleRef;
+            break;
+            
+        case Frequency:
+            current_reference = sine_offset + sine_amplitude * sinf(2.0 * 3.14159 * sine_frequency * t);
+            break;
 
-      case Angle_Disruptions:
-          current_reference = AngleRef;
-          if (t >= disturbance_start_time && !disturbance_applied) 
-          {
-              Motor.Angle += disturbance_magnitude;
-              disturbance_applied = true;
-          }
-      break;
+        case Disruption:
+            current_reference = AngleRef;
+            if (t >= disturbance_start_time && !disturbance_applied) 
+            {
+                Motor.Angle += disturbance_magnitude;
+                disturbance_applied = true;
+            }
+        break;
 
       }
 
@@ -288,17 +285,20 @@ float PID_Calculate(pid_t *pid, float target, float current)
 {
     pid->err = target - current;
     pid->err_sum += pid->err;
-    pid->err_difference = pid->err - pid->last_err;
+    pid->err_difference = (pid->err - pid->last_err);
     pid->last_err = pid->err;
     
     if(pid->err_sum > 1000) pid->err_sum = 1000;
     if(pid->err_sum < -1000) pid->err_sum = -1000;
     
-    float output = (pid->Kp * pid->err) + (pid->Ki * pid->err_sum) + (pid->Kd * pid->err_difference);
+    float output = (pid->Kp * pid->err) + 
+                   (pid->Ki * pid->err_sum) + 
+                   (pid->Kd * pid->err_difference);
     
     pid->output_lvbo = pid->lvbo * output + (1 - pid->lvbo) * pid->output_lvbo;
     
     return pid->output_lvbo;
+    //return output;
 }
 /* USER CODE END 4 */
 
