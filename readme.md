@@ -175,13 +175,19 @@ float PID_Calculate(pid_t *pid, float target, float current)
 
 ##### （3）阶跃响应时域图
 
-<font color=Blue>放一张图，应至少包含期望角度，单级PID实际角度，串级PID实际角度三条曲线。并对比分析结果。</font>
+![3](picture/angle_step.png)
 
+图中：蓝线为串级pid，绿线为单极pid
 
+单级pid的响应更为快速，但超调也更为明显，相对串级pid来说不太稳定。而串级pid响应速度较慢，但相对稳定，振荡较小。
 
 ##### （4）频率响应时域图
 
-<font color=Blue>放一张图，应至少包含期望角度与期望角度，单级PID实际角度，串级PID实际角度三条曲线。并对比分析结果。</font>
+![3](picture/angle_frequency.png)
+
+图中：淡蓝线为理想曲线，绿线为单级，蓝线为串级
+
+单级pid响应曲线的幅值响应较大，波动明显，同时滞后较大，动态响应差；而串级pid响应曲线相对稳定，滞后也更小，动态响应好
 
 ##### （5）抗干扰性能时域图
 

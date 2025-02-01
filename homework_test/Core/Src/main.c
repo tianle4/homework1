@@ -58,14 +58,22 @@ typedef struct
     float lvbo;  //低通滤波参数
 } pid_t;
 
-pid_t pid_velocity, pid_angle; 
+pid_t pid_velocity, pid_angle,pid_angle2;  
+
 uint32_t DWT_CNT;
+
 float dt;
 float t;
+
 motorObject_t Motor;
+motorObject_t Motor_Single, Motor_Cascade;  // 单级、串级
+  
+
 float Input=0.0;
+float cascade_outer_output = 0.0,cascade_inner_output = 0.0;
+float single_output = 0.0;
 float Kp_v=0.1, Ki_v=0.01, Kd_v=0.2;  //速度闭环
-float Kp_a=5, Ki_a=0.01, Kd_a=0.2;    //角度闭环
+float Kp_a=8, Ki_a=0.03, Kd_a=0.2;    //角度闭环
 
 #define velocity 0    // 速度控制模式
 #define angle 1       // 角度控制模式
@@ -77,8 +85,8 @@ float Kp_a=5, Ki_a=0.01, Kd_a=0.2;    //角度闭环
 
 //模式控制
 uint8_t control_mode = angle;  //总模式
-uint8_t velocity_mode = Step; //速度
-uint8_t angle_mode = Step;       //角度
+uint8_t velocity_mode = Step;  //速度
+uint8_t angle_mode = Step;     //角度
 
 float VelocityRef = 10.0;      
 float AngleRef = 3.14159;     
@@ -141,10 +149,17 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	void PID_Init(pid_t *pid, float Kp, float Ki, float Kd);
 	float PID_Calculate(pid_t *pid, float target, float current);
+
   PID_Init(&pid_velocity, Kp_v, Ki_v, Kd_v);
   PID_Init(&pid_angle, Kp_a, Ki_a, Kd_a);
+  PID_Init(&pid_angle2,Kp_a, Ki_a, Kd_a);
+
   Motor_Object_Init(&Motor);
+  Motor_Object_Init(&Motor_Single);
+  Motor_Object_Init(&Motor_Cascade);
+
   DWT_Init(72);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -213,9 +228,21 @@ int main(void)
 
       }
 
-      Input = PID_Calculate(&pid_angle, current_reference, Motor.Angle);
-      Motor_Simulation(&Motor,Input,dt);
-      Motor.Angle = Get_Motor_Angle(&Motor);
+      // 单级PID控制
+      single_output = PID_Calculate(&pid_angle, current_reference, Motor_Single.Angle);
+      Motor_Simulation(&Motor_Single, single_output, dt);
+      Motor_Single.Angle = Get_Motor_Angle(&Motor_Single);
+
+      // 串级PID控制（使用更激进的参数）
+      cascade_outer_output = PID_Calculate(&pid_angle, current_reference,Motor_Cascade.Angle);
+      cascade_inner_output = PID_Calculate(&pid_angle2, cascade_outer_output, Motor_Cascade.Velocity);
+      Motor_Simulation(&Motor_Cascade, cascade_inner_output, dt);
+      Motor_Cascade.Angle = Get_Motor_Angle(&Motor_Cascade);
+
+
+      // Input = PID_Calculate(&pid_angle, current_reference, Motor.Angle);
+      // Motor_Simulation(&Motor,Input,dt);
+      // Motor.Angle = Get_Motor_Angle(&Motor);
     }
 
 
@@ -287,7 +314,7 @@ float PID_Calculate(pid_t *pid, float target, float current)
     pid->err_sum += pid->err;
     pid->err_difference = (pid->err - pid->last_err);
     pid->last_err = pid->err;
-    
+
     if(pid->err_sum > 1000) pid->err_sum = 1000;
     if(pid->err_sum < -1000) pid->err_sum = -1000;
     

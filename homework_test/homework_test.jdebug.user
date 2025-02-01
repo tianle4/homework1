@@ -1,19 +1,20 @@
 
 GraphedExpression="(Motor).Velocity", Color=#a00909
-GraphedExpression="current_reference", Color=#09a01b
-GraphedExpression="(Motor).Angle", Color=#0000ff
+GraphedExpression="current_reference", Color=#aaaaff
+GraphedExpression="(Motor_Single).Angle", Color=#00ff00
+GraphedExpression="(Motor_Cascade).Angle", Color=#0984a0
 OpenDocument="bsp_dwt.c", FilePath="D:/STM32 Project/homework1/homework_test/Bsp/bsp_dwt.c", Line=0
-OpenDocument="stm32f1xx_hal.c", FilePath="D:/STM32 Project/homework1/homework_test/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c", Line=293
-OpenDocument="main.c", FilePath="D:/STM32 Project/homework1/homework_test/Core/Src/main.c", Line=112
+OpenDocument="stm32f1xx_hal.c", FilePath="D:/STM32 Project/homework1/homework_test/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c", Line=292
+OpenDocument="main.c", FilePath="D:/STM32 Project/homework1/homework_test/Core/Src/main.c", Line=120
 OpenToolbar="Debug", Floating=0, x=0, y=0
-OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=786, h=205, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=786, h=231, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Watched Data 1", DockArea=LEFT, x=0, y=0, w=404, h=909, TabPos=0, TopOfStack=1, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=404, h=909, TabPos=1, TopOfStack=0, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
 OpenWindow="Data Sampling", DockArea=RIGHT, x=0, y=2, w=786, h=310, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, VisibleTab=0, UniformSampleSpacing=0
-OpenWindow="Timeline", DockArea=RIGHT, x=0, y=1, w=786, h=408, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="500 ms / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="551;0", PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="585;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="599;0"
+OpenWindow="Timeline", DockArea=RIGHT, x=0, y=1, w=786, h=382, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=1, DataPaneShown=1, PowerPaneShown=0, CodePaneShown=0, PinCursor="Cursor Movable", TimePerDiv="500 ms / Div", TimeStampFormat="Time", DataGraphDrawAsPoints=0, DataGraphLegendShown=1, DataGraphUniformSampleSpacing=0, DataGraphLegendPosition="523;0", PowerGraphDrawAsPoints=0, PowerGraphLegendShown=0, PowerGraphAvgFilterTime=Off, PowerGraphAvgFilterLen=Off, PowerGraphUniformSampleSpacing=0, PowerGraphLegendPosition="585;0", CodeGraphLegendShown=0, CodeGraphLegendPosition="599;0"
 TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[910;100;100;100;100]
-TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" (Motor).Velocity";" current_reference";" (Motor).Angle"], ColWidths=[100;100;100;100;100]
-TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[100;100;100;100;100;100;100;107;110]
+TableHeader="Data Sampling Table", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";" (Motor).Velocity";" current_reference";" (Motor_Single).Angle";" (Motor_Cascade).Angle"], ColWidths=[100;100;100;100;100;100]
+TableHeader="Data Sampling Setup", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Type";"Value";"Min";"Max";"Average";"# Changes";"Min. Change";"Max. Change"], ColWidths=[100;100;102;100;100;100;100;118;107]
 TableHeader="Power Sampling", SortCol="Index", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
 TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
 TableHeader="Watched Data 1", SortCol="Expression", SortOrder="ASCENDING", VisibleCols=["Expression";"Value";"Location";"Refresh"], ColWidths=[100;100;100;104]
@@ -29,3 +30,5 @@ WatchedExpression="Kd_a", Window=Watched Data 1
 WatchedExpression="Kp_v", Window=Watched Data 1
 WatchedExpression="Ki_v", Window=Watched Data 1
 WatchedExpression="Kd_v", Window=Watched Data 1
+WatchedExpression="Motor_Single", Window=Watched Data 1
+WatchedExpression="Motor_Cascade", Window=Watched Data 1
