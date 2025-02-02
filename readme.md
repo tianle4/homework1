@@ -4,24 +4,13 @@
 <center><span style="font-family:华文楷体;font-size:12pt">哈尔滨工程大学创梦之翼战队，电控组，邮箱 tianle4@outlook.com<br /></span>
 
 
-
-<font color=Blue>注意事项 ：</font>
-
-<font color=Blue>1、应将所有蓝色字体删去作为最终上交的报告。</font>
-
-<font color=Blue>2、可以参考优秀文章和相关资料，但是不能照抄</font>。
-
-<font color=Blue>3、绿色字体标题内容为选做部分，其余为必做部分。</font>
-
-<font color=Blue>4、注意：寒假第一次作业质量不合格者，将失去梯队队员资格！！！</font>
-
 ## 八字方针：建模 分析 设计 校验
 
 ### 一、建模
 
 #### 1.1 确定传递函数形式
 
-<font color=Blue>运用机理法，通过分析系统的数学物理关系，建立系统的数学模型，如微分方程，传递函数等。实验说明文档中已经给出了示例，可以参考文档，并添加自己的理解。把建模的过程写在这里。</font>
+#### ![0](picture/transfer function.jpg)
 
 #### <font color=Green>1.2 确定传递函数参数</font>
 
@@ -41,11 +30,7 @@
 
 ### 三、设计
 
-<font color=Blue>设计控制器，并调节参数，提高系统的控制性能，如加快响应速度，抑制超调，消除稳态误差等。</font>
-
 #### 3.1 PID控制器的数学表达式
-
-<font color=Blue>控制器的微分方程，差分方程或传递函数。</font>
 
 C(s) = K+ $\frac{Ki}{s}$ + K~d~s
 
@@ -93,23 +78,15 @@ float PID_Calculate(pid_t *pid, float target, float current)
 
 ### 四、校验（最重要）
 
-<font color=Blue>将设计的控制器编写成C语言，并在单片机中运行电机仿真程序，观察电机响应曲线。</font>
-
-<font color=Blue>注：即使没有把传递函数建模出来，仍可通过凑试法来确定控制器参数。</font>
-
 #### 4.1 速度闭环
 
 ##### （1）系统框图
 
-<font color=Blue>绘制系统速度闭环控制框图</font>
-
-![1](picture/2.jpg)
+![2](picture/velocity_control.jpg)
 
 ##### （2）关键代码
 
 ```c
-PID_Init(pid_t *pid, 0.1, 0.01, 0.02);
-
 void PID_Init(pid_t *pid, float Kp, float Ki, float Kd)//pid初始化
 {
     pid->err = 0;
@@ -122,6 +99,10 @@ void PID_Init(pid_t *pid, float Kp, float Ki, float Kd)//pid初始化
     pid->output_filter = 0;
     pid->alpha = 0.1f;  // 滤波系数
 }
+
+	Input = PID_Calculate(&pid_velocity, current_reference, Motor.Velocity);
+    Motor_Simulation(&Motor, Input, dt);
+  	Motor.Velocity = Get_Motor_Velocity(&Motor);
 
 float PID_Calculate(pid_t *pid, float target, float current)
 {
@@ -151,11 +132,9 @@ float PID_Calculate(pid_t *pid, float target, float current)
 
 ##### （4） 斜坡响应时域图
 
-<font color=Blue>放一张图，应至少包含期望速度与速度闭环控制系统实际速度两条曲线。并对比分析结果。</font>
+![2](picture/ramp.png)
 
 ##### （5）频率响应时域图
-
-<font color=Blue>放一张图，应至少包含期望速度与速度闭环控制系统实际速度两条曲线。并对比分析结果。</font>
 
 ![2](picture/frequency.png)
 
@@ -163,14 +142,38 @@ float PID_Calculate(pid_t *pid, float target, float current)
 
 ##### （1）系统框图
 
-<font color=Blue>绘制系统角度闭环控制框图</font>
-
-![1](picture/2.jpg)
+![3](picture/angle_control.jpg)
 
 ##### （2）关键代码
 
-```
-//此处粘贴代码
+```c
+single_output = PID_Calculate(&pid_angle, current_reference, Motor_Single.Angle);//单
+Motor_Simulation(&Motor_Single, single_output, dt);
+Motor_Single.Angle = Get_Motor_Angle(&Motor_Single);
+
+cascade_outer_output = PID_Calculate(&pid_angle, current_reference,Motor_Cascade.Angle);//串
+cascade_inner_output = PID_Calculate(&pid_angle2, cascade_outer_output, Motor_Cascade.Velocity);
+Motor_Simulation(&Motor_Cascade, cascade_inner_output, dt);
+Motor_Cascade.Angle = Get_Motor_Angle(&Motor_Cascade);
+
+float PID_Calculate(pid_t *pid, float target, float current)//pid运算
+{
+    pid->err = target - current;
+    pid->err_sum += pid->err;
+    pid->err_difference = (pid->err - pid->last_err);
+    pid->last_err = pid->err;
+
+    if(pid->err_sum > 1000) pid->err_sum = 1000;
+    if(pid->err_sum < -1000) pid->err_sum = -1000;
+    
+    float output = (pid->Kp * pid->err) + 
+                   (pid->Ki * pid->err_sum) + 
+                   (pid->Kd * pid->err_difference);
+    
+    pid->output_lvbo = pid->lvbo * output + (1 - pid->lvbo) * pid->output_lvbo;
+    
+    return pid->output_lvbo;//滤波输出
+}
 ```
 
 ##### （3）阶跃响应时域图
@@ -193,9 +196,7 @@ float PID_Calculate(pid_t *pid, float target, float current)
 
 <font color=Blue>放一张图，应至少包含期望角度，单级PID实际角度，串级PID实际角度三条曲线。并于无干扰的控制情况对比分析结果。</font>
 
-
-
-<font color=Blue>提示：建模时难免会有误差，因此控制器参数需要在校验时进行调整。</font>
+![3](picture/disturbance.png)
 
 ### 五、扩展内容
 

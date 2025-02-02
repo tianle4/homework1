@@ -78,32 +78,33 @@ float Kp_a=8, Ki_a=0.03, Kd_a=0.2;    //角度闭环
 #define velocity 0    // 速度控制模式
 #define angle 1       // 角度控制模式
 
+//响应模式控制
 #define Step 0
 #define Ramp 1
-#define Frequency 3
-#define Disruption 4
+#define Frequency 2
+#define Disruption 3
 
 //模式控制
 uint8_t control_mode = angle;  //总模式
-uint8_t velocity_mode = Step;  //速度
-uint8_t angle_mode = Step;     //角度
+uint8_t math_mode = Disruption; 
 
+float pai = 3.14159;
 float VelocityRef = 10.0;      
-float AngleRef = 3.14159;     
+float AngleRef = 3.14159;    
 float current_reference = 0.0;    
 
-float disturbance_start_time = 5.0;    // 干扰开始
-float disturbance_magnitude = 2.0;      // 干扰幅值
-bool disturbance_applied = false;       // 干扰标志
+float disturbance = 0.0;
+bool disturbance_applied = false;      // 干扰标志
 
-float velocity_ramp_rate = 1.0;     // 速度斜坡变化率（单位/秒）
-float angle_ramp_rate = 0.5;       // 角度斜坡变化率（弧度/秒）
-float current_velocity = 0.0;  // 当前速度值
-float current_angle_value = 0.0;     // 当前角度值
+float velocity_ramp_rate = 1.0;     // 速度斜坡变化率
+float current_velocity = 0.0;       // 当前速度
+float current_angle_value = 0.0;    // 当前角度
 
-float sine_amplitude = 5.0; // 正弦信号幅值
-float sine_frequency = 1.0; // 正弦信号频率
-float sine_offset = 5.0;    // 正弦信号偏置
+float sine_amplitude = 10.0; // 幅值
+float sine_amplitude2 = 3.14159 * 2;
+float sine_frequency = 1.0; // 频率
+float sine_offset = 10.0;    // 偏置
+float sine_offset2 = 3.14159 * 2;
 
 /* USER CODE END PV */
 
@@ -172,14 +173,14 @@ int main(void)
     if (control_mode == velocity) 
     {
       // 速度控制模式
-      switch(velocity_mode)
+      switch(math_mode)
       {
         case Step:
           current_reference = VelocityRef;
         break;
         
         case Frequency:
-          current_reference=sine_offset+sine_amplitude*sinf(2.0*3.14159*sine_frequency*t);
+          current_reference = 10.0 * sinf(2.0 * 3.14159 * sine_frequency * t);
         break;
 
         case Ramp:
@@ -207,42 +208,37 @@ int main(void)
     else if (control_mode == angle) 
     {
       // 角度控制模式
-      switch(angle_mode)
+      switch(math_mode)
       {
         case Step:
             current_reference = AngleRef;
             break;
             
         case Frequency:
-            current_reference = sine_offset + sine_amplitude * sinf(2.0 * 3.14159 * sine_frequency * t);
+            current_reference = 2.0 * 3.14159 * sinf(2.0 * 3.14159 * sine_frequency * t);
             break;
 
         case Disruption:
-            current_reference = AngleRef;
-            if (t >= disturbance_start_time && !disturbance_applied) 
+            current_reference = 0;
+            if (disturbance != 0 && !disturbance_applied)
             {
-                Motor.Angle += disturbance_magnitude;
-                disturbance_applied = true;
+                Motor_Single.Angle += disturbance;
+                Motor_Cascade.Angle += disturbance;
+                disturbance_applied = true;  // 设置标志位，防止重复应用
             }
-        break;
+            break;
 
       }
 
-      // 单级PID控制
       single_output = PID_Calculate(&pid_angle, current_reference, Motor_Single.Angle);
       Motor_Simulation(&Motor_Single, single_output, dt);
       Motor_Single.Angle = Get_Motor_Angle(&Motor_Single);
 
-      // 串级PID控制（使用更激进的参数）
       cascade_outer_output = PID_Calculate(&pid_angle, current_reference,Motor_Cascade.Angle);
       cascade_inner_output = PID_Calculate(&pid_angle2, cascade_outer_output, Motor_Cascade.Velocity);
       Motor_Simulation(&Motor_Cascade, cascade_inner_output, dt);
       Motor_Cascade.Angle = Get_Motor_Angle(&Motor_Cascade);
 
-
-      // Input = PID_Calculate(&pid_angle, current_reference, Motor.Angle);
-      // Motor_Simulation(&Motor,Input,dt);
-      // Motor.Angle = Get_Motor_Angle(&Motor);
     }
 
 
