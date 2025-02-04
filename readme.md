@@ -10,23 +10,39 @@
 
 #### 1.1 确定传递函数形式
 
-#### ![0](picture/transfer function.jpg)
+#### ![0](picture/transfer_function.jpg)
 
 #### <font color=Green>1.2 确定传递函数参数</font>
 
-<font color=Blue>运用实验法，向系统添加已知的输入，通过研究其响应确定传递函数参数。在这里填入传递函数参数，具体推导方法写在第五节。</font>
-
 ### 二、分析
-
-<font color=Blue>利用根轨迹，伯德图等方法，分析开环系统的性能，如响应速度，超调大小，稳定性，稳态误差等。</font>
 
 #### <font color=Green>2.1 系统开环传递函数根轨迹</font>
 
-<font color=Blue>放一系列开环系统根轨迹的图片并做一定分析</font>
+![0](picture/gen1.png)
+
+传递函数为：G(s) = $\frac{s + 4}{s^2 + 2s + 1} $ ；开环极点为：s = -1，-1（双重极点）；开环零点为：s = -4
+
+根轨迹从两个开环极点 (−1,0)(−1,0) 开始。随着增益K的增加，一个极点逐渐向左移动，最终到达开环零点 (−4,0)(−4,0)；另一个极点则沿着实轴向负无穷远移动。在所有K>0的情况下，系统始终稳定，闭环极点始终位于复平面的左半平面
+
+![0](picture/gen2.png)
+
+传递函数为：$\frac{1}{s^2 + 4s + 1}$ 开环极点为：S~1~ = -2 + $\sqrt{3}$，S~2~ = -2 - $\sqrt{3}$ ；无开环零点
+
+根轨迹从两个开环极点出发，沿着虚轴对称展开，两条轨迹分支分别朝复平面的正虚轴和负虚轴延伸，轨迹对称。由于系统没有开环零点，因此根轨迹的分支会趋向于无穷远。
 
 #### <font color=Green>2.2 系统开环传递函数伯德图</font>
 
-<font color=Blue>放一系列开环系统伯德图并做一定分析</font>
+![0](picture/bode1.png)
+
+传递函数为：$\frac{1}{s^2 + 4s + 1}$ 
+
+
+
+![0](picture/bode2.png)
+
+传递函数为：$\frac{s + 4}{s^2 + 2s + 1}$ 
+
+
 
 ### 三、设计
 
@@ -70,11 +86,17 @@ float PID_Calculate(pid_t *pid, float target, float current)
 
 #### <font color=Green>3.3 加入控制器后的simulink仿真结构图</font>
 
-<font color=Blue>在这里放一张simulink仿真结构图并做说明。</font>
+![0](picture/pid_simulink.png)
+
+Kp为比例项，Ki为积分项，Kd为微分项
 
 #### <font color=Green>3.4 simulink仿真结果</font>
 
-<font color=Blue>把simulink仿真结果放在这里并做说明。</font>
+![0](picture/pid_simulink2.png)
+
+输出信号从 0 开始逐步上升，说明系统在**响应时间**内逐渐接近目标值，在这一阶段，比例控制器 Kp 主导作用，快速缩小误差信号。
+
+输出信号在4 > 5s 时出现超调，并在 t=6s 后，在微分控制器的作用下，输出信号开始逐渐减小，趋近于目标值 10。
 
 ### 四、校验（最重要）
 
@@ -124,8 +146,6 @@ float PID_Calculate(pid_t *pid, float target, float current)
 
 ##### （3）阶跃响应时域图
 
-<font color=Blue>放一张图，应至少包含期望速度与速度闭环控制系统实际速度两条曲线。并对比分析结果。</font>
-
 ![2](picture/step.png)
 
 0 - 500ms上升速度较慢，上升时间长，动态响应慢。达到500ms后存在超调，随后趋于稳定，稳态误差为零
@@ -134,9 +154,15 @@ float PID_Calculate(pid_t *pid, float target, float current)
 
 ![2](picture/ramp.png)
 
+图像表明，系统输出表现为平滑曲线，无明显震荡或过冲，能够较好地跟踪输入信号较为稳定；但存在一定的瞬态误差和时间延迟。
+
 ##### （5）频率响应时域图
 
 ![2](picture/frequency.png)
+
+系统对输入信号的响应存在一定的时间滞后，并且输入信号的幅值有所衰减。不过，系统能够较好地跟踪输入信号
+
+同时，由于低通滤波的影响，幅值减少较为明显。
 
 #### 4.2 角度闭环
 
@@ -194,25 +220,27 @@ float PID_Calculate(pid_t *pid, float target, float current)//pid运算
 
 ##### （5）抗干扰性能时域图
 
-<font color=Blue>放一张图，应至少包含期望角度，单级PID实际角度，串级PID实际角度三条曲线。并于无干扰的控制情况对比分析结果。</font>
-
 ![3](picture/disturbance.png)
+
+图中：淡蓝线为理想曲线，绿线为单级，蓝线为串级
+
+单级pid调节时间较长，系统在多次振荡后才逐渐趋于稳定，而串级pid具有更快的响应能力，振荡幅度较小。相较来说，串级pid的
+
+抗干扰能力更强。
 
 ### 五、扩展内容
 
 ### <font color=Green>1、推导该电机系统的传递函数</font>
 
-<font color=Blue>描述建立传递函数的方法、自己的思路以及结果</font>
 
-<font color=Blue>附上设计过程中重要的截图</font>
 
 ### <font color=Green>2、复合控制</font>
 
-<font color=Blue>自行查阅资料，采用能想到的方法设计更好的控制器（PID优化，前馈等），从而提高系统的性能。</font>
+
 
 #### <font color=Green>2.1 控制器设计</font>
 
-<font color=Blue>在这里详细介绍自己选择的控制器。并贴上系统框图</font>
+
 
 #### <font color=Green>2.2 关键代码</font>
 
@@ -224,16 +252,14 @@ float PID_Calculate(pid_t *pid, float target, float current)//pid运算
 
 （1）角度闭环阶跃响应
 
-<font color=Blue>放一张图，应至少包含期望角度，用传统PID闭环控制的实际曲线和用改进控制器的实际曲线三条曲线。并对比分析结果。</font>
+
 
 （2）角度闭环频率响应
 
-<font color=Blue>放一张图，应至少包含期望角度，用传统PID闭环控制的实际曲线和用改进控制器的实际曲线三条曲线。并对比分析结果。</font>
+
 
 （3）角度闭环抗干扰性能
 
-<font color=Blue>放一张图，应至少包含期望角度，用传统PID闭环控制的实际曲线和用改进控制器的实际曲线三条曲线。并对比分析结果。</font>
+
 
 ### <font color=Green>3、滤波</font>
-
-<font color=Blue>在Matlab仿真中给系统的反馈信号叠加噪声，并自行设计滤波器滤除噪声，比较滤波前后的控制效果。</font>
